@@ -38,7 +38,7 @@
 #include <libgen.h> /* dirname,basename */
 #undef basename
 #define basename dont_use_basename
-#include <poll.h>
+// #include <poll.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/resource.h>
@@ -781,15 +781,23 @@ struct BUG_too_small {
 	char BUG_socktype_t_too_small[(0
 			| SOCK_STREAM
 			| SOCK_DGRAM
+#ifdef SOCK_RDM
 			| SOCK_RDM
+#endif
+#ifdef SOCK_SEQPACKET
 			| SOCK_SEQPACKET
+#endif
+#ifdef SOCK_RAW
 			| SOCK_RAW
+#endif
 			) <= 127 ? 1 : -1];
 	char BUG_family_t_too_small[(0
 			| AF_UNSPEC
 			| AF_INET
 			| AF_INET6
+#ifdef AF_UNIX
 			| AF_UNIX
+#endif
 #ifdef AF_PACKET
 			| AF_PACKET
 #endif

@@ -6,6 +6,7 @@
  *
  * Licensed under GPLv2, see file LICENSE in this source tree.
  */
+#include <sys/cpuset.h>
 #include <sched.h>
 #include "libbb.h"
 

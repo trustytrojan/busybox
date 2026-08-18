@@ -323,7 +323,7 @@ typedef unsigned smalluint;
  || defined __dietlibc__ \
  || defined __BIONIC__ \
  || defined _NEWLIB_VERSION
-# include <features.h>
+// # include <features.h>
 #endif
 
 /* Define bb_setpgrp */
@@ -436,6 +436,14 @@ typedef unsigned smalluint;
 #define HAVE_WAIT3 1
 #define HAVE_DEV_FD 1
 #define DEV_FD_PREFIX "/dev/fd/"
+
+// BlocksDS undefs
+#undef HAVE_UNLOCKED_STDIO
+#undef HAVE_UNLOCKED_LINE_OPS
+#undef HAVE_MNTENT_H
+#undef HAVE_SYS_STATFS_H
+#undef HAVE_CLEARENV
+#undef HAVE_TTYNAME_R
 
 #if defined(__UCLIBC__)
 # if UCLIBC_VERSION < KERNEL_VERSION(0, 9, 32)

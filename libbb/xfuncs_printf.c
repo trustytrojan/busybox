@@ -306,7 +306,13 @@ void FAST_FUNC die_if_ferror_stdout(void)
 
 int FAST_FUNC fflush_all(void)
 {
-	return fflush(NULL);
+	// wf-picolibc is built with __STDIO_EXIT_FLUSH undefined,
+	// causing a null pointer access in __fflush_locked() here:
+	// https://codeberg.org/WonderfulToolchain/wf-picolibc/src/commit/b1fde835994df211a4cd1c79913d29bc51f1b573/libc/stdio/local-stdio.h#L846
+	// so fflush(NULL) can never be called. instead manually flush stdout and stderr:
+	fflush(stdout);
+	fflush(stderr);
+	return 0;
 }
 
 

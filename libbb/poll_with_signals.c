@@ -9,6 +9,7 @@
 //kbuild:lib-y += poll_with_signals.o
 
 #include "libbb.h"
+#include <sys/ppoll.h>
 
 /* Shells, for example, need their line input and "read" builtin
  * to be interruptible, and the naive handling of it a-la:

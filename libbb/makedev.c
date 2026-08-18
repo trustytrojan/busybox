@@ -14,8 +14,8 @@
  || defined(__APPLE__)
 # include <sys/types.h>
 #else
-# include <features.h>
-# include <sys/sysmacros.h>
+// # include <features.h>
+// # include <sys/sysmacros.h>
 #endif
 
 #ifdef __GLIBC__

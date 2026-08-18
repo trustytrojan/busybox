@@ -9,8 +9,9 @@
 #include <sys/types.h>
 #include <sys/socket.h> /* netinet/in.h needs it */
 #include <netinet/in.h>
-#include <net/if.h>
-#include <sys/un.h>
+#include <sys/getnameinfo.h>
+// #include <net/if.h>
+// #include <sys/un.h>
 #if ENABLE_IFPLUGD || ENABLE_FEATURE_MDEV_DAEMON || ENABLE_UEVENT
 # include <linux/netlink.h>
 #endif
@@ -166,7 +167,8 @@ IF_NOT_FEATURE_IPV6(sa_family_t af = AF_INET;)
 	const char *cp;
 	struct addrinfo hint;
 
-	if (ENABLE_FEATURE_UNIX_LOCAL && is_prefixed_with(host, "local:")) {
+#if ENABLE_FEATURE_UNIX_LOCAL
+	if (is_prefixed_with(host, "local:")) {
 		struct sockaddr_un *sun;
 
 		r = xzalloc(LSA_LEN_SIZE + sizeof(struct sockaddr_un));
@@ -176,6 +178,7 @@ IF_NOT_FEATURE_IPV6(sa_family_t af = AF_INET;)
 		safe_strncpy(sun->sun_path, host + 6, sizeof(sun->sun_path));
 		return r;
 	}
+#endif
 
 	r = NULL;
 
@@ -337,8 +340,10 @@ int FAST_FUNC xsocket_type(len_and_sockaddr **lsap, int family, int sock_type)
 	fd = xsocket(family, sock_type, 0);
 
 	len = sizeof(struct sockaddr_in);
+#if ENABLE_FEATURE_UNIX_LOCAL
 	if (family == AF_UNIX)
 		len = sizeof(struct sockaddr_un);
+#endif
 #if ENABLE_FEATURE_IPV6
 	if (family == AF_INET6) {
  done:
@@ -453,17 +458,19 @@ static char* FAST_FUNC sockaddr2str(const struct sockaddr *sa, int flags)
 	int rc;
 	socklen_t salen;
 
-	if (ENABLE_FEATURE_UNIX_LOCAL && sa->sa_family == AF_UNIX) {
+#if ENABLE_FEATURE_UNIX_LOCAL
+	if (sa->sa_family == AF_UNIX) {
 		struct sockaddr_un *sun = (struct sockaddr_un *)sa;
 		return xasprintf("local:%.*s",
 				(int) sizeof(sun->sun_path),
 				sun->sun_path);
 	}
+#endif
 
 	salen = LSA_SIZEOF_SA;
-#if ENABLE_FEATURE_IPV6
 	if (sa->sa_family == AF_INET)
 		salen = sizeof(struct sockaddr_in);
+#if ENABLE_FEATURE_IPV6
 	if (sa->sa_family == AF_INET6)
 		salen = sizeof(struct sockaddr_in6);
 #endif
